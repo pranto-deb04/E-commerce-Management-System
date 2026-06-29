@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>E-Shopping - Register</title>
+  <style>
+    /* Global Reset & Theme Background */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background-color: #0f172a;
+      /* ডার্ক ব্লু/ব্ল্যাক ব্যাকগ্রাউন্ড */
+      color: #ffffff;
+      /* মেইন টেক্সট কালার সাদা */
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    /* Navigation Bar Layout */
+    header {
+      background-color: #1e293b;
+      /* হালকা ডার্ক গ্রে-ব্লু */
+      padding: 15px 5%;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
+    }
+
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      font-size: 24px;
+      font-weight: bold;
+      color: #38bdf8;
+      /* উজ্জ্বল স্কাই ব্লু */
+      text-decoration: none;
+    }
+
+    .auth-buttons {
+      display: flex;
+      gap: 15px;
+    }
+
+    .btn-nav {
+      text-decoration: none;
+      padding: 8px 18px;
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: 14px;
+      color: #38bdf8;
+      border: 2px solid #38bdf8;
+      background: transparent;
+      transition: all 0.3s ease;
+    }
+
+    .btn-nav:hover {
+      background-color: #38bdf8;
+      color: #0f172a;
+    }
+
+    /* Registration Form Container & Card */
+    .register-container {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 40px 20px;
+    }
+
+    .register-card {
+      background-color: #1e293b;
+      /* হালকা ডার্ক গ্রে-ব্লু কার্ড */
+      padding: 35px;
+      border-radius: 12px;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3), 0 8px 10px -6px rgba(0, 0, 0, 0.3);
+      width: 100%;
+      max-width: 450px;
+    }
+
+    .register-card h2 {
+      color: #ffffff;
+      margin-bottom: 25px;
+      text-align: center;
+      font-size: 28px;
+      font-weight: 700;
+    }
+
+    /* Form Controls & Labels */
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: #94a3b8;
+      /* ধূসর সাদা টেক্সট */
+      font-size: 14px;
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 12px;
+      background-color: #0f172a;
+      /* ইনপুট ফিল্ডের ভেতরের ডার্ক ব্যাকগ্রাউন্ড */
+      border: 1px solid #334155;
+      border-radius: 6px;
+      font-size: 15px;
+      color: #ffffff;
+      outline: none;
+      transition: all 0.3s ease;
+    }
+
+    /* Dropdown/Select option styling fix for dark background */
+    select.form-control option {
+      background-color: #1e293b;
+      color: #ffffff;
+    }
+
+    .form-control:focus {
+      border-color: #38bdf8;
+      box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2);
+    }
+
+    /* Password Wrapper for Eye Icon */
+    .password-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .password-wrapper .form-control {
+      padding-right: 45px;
+    }
+
+    .toggle-password {
+      position: absolute;
+      right: 15px;
+      cursor: pointer;
+      user-select: none;
+      font-size: 16px;
+      filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.5));
+      /* আইকনটি ডার্ক মোডে স্পষ্ট দেখানোর জন্য */
+    }
+
+    /* Submit Button (Using the Accent Color) */
+    .btn-submit {
+      width: 100%;
+      padding: 12px;
+      background-color: #38bdf8;
+      /* উজ্জ্বল স্কাই ব্লু */
+      color: #0f172a;
+      /* বাটনের ভেতরের টেক্সট ডার্ক */
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.3s ease, transform 0.1s ease;
+      margin-top: 10px;
+    }
+
+    .btn-submit:hover {
+      background-color: #7dd3fc;
+      /* হোভারে হালকা উজ্জ্বল স্কাই ব্লু */
+    }
+
+    .btn-submit:active {
+      transform: scale(0.98);
+    }
+
+    /* Login Link Below Form */
+    .login-link {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 14px;
+      color: #94a3b8;
+      /* ধূসর সাদা টেক্সট */
+    }
+
+    .login-link a {
+      color: #38bdf8;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .login-link a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <nav class="navbar">
+      <a href="#" class="logo">E-Shopping</a>
+      <div class="auth-buttons">
+        <a href="#" class="btn-nav">Login</a>
+      </div>
+    </nav>
+  </header>
+
+  <div class="register-container">
+    <div class="register-card">
+      <h2>Create Account</h2>
+
+      <form action="#" method="POST">
+        <div class="form-group">
+          <label for="name">Full Name</label>
+          <input type="text" id="name" class="form-control" placeholder="Enter your full name" required>
+        </div>
+
+        <div class="form-group">
+          <label for="email">Email Address</label>
+          <input type="email" id="email" class="form-control" placeholder="Enter your email" required>
+        </div>
+
+        <div class="form-group">
+          <label for="role">Register As</label>
+          <select id="role" class="form-control" required>
+            <option value="" disabled selected style="color: #64748b;">Select your role</option>
+            <option value="customer">Customer</option>
+            <option value="admin">Admin</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="password">Password</label>
+          <div class="password-wrapper">
+            <input type="password" id="password" class="form-control" placeholder="Create a password" required>
+            <span class="toggle-password" onclick="togglePasswordVisibility('password', this)">👁️</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="confirm-password">Confirm Password</label>
+          <div class="password-wrapper">
+            <input type="password" id="confirm-password" class="form-control" placeholder="Confirm your password"
+              required>
+            <span class="toggle-password" onclick="togglePasswordVisibility('confirm-password', this)">👁️</span>
+          </div>
+        </div>
+
+        <button type="submit" class="btn-submit">Sign Up</button>
+      </form>
+
+      <div class="login-link">
+        Already have an account? <a href="#">Login here</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function togglePasswordVisibility(fieldId, toggleElement) {
+      const passwordField = document.getElementById(fieldId);
+
+      if (passwordField.type === "password") {
+        passwordField.type = "text";
+        toggleElement.textContent = "🙈";
+      } else {
+        passwordField.type = "password";
+        toggleElement.textContent = "👁️";
+      }
+    }
+  </script>
+
+</body>
+
+</html>
