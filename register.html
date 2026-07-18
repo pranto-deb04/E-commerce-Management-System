@@ -215,7 +215,7 @@
     <nav class="navbar">
       <a href="#" class="logo">E-Shopping</a>
       <div class="auth-buttons">
-        <a href="#" class="btn-nav">Login</a>
+        <a href="login.php" class="btn-nav">Login</a>
       </div>
     </nav>
   </header>
@@ -224,21 +224,22 @@
     <div class="register-card">
       <h2>Create Account</h2>
 
-      <form id="registerForm" action="#" method="POST">
+      <form id="registerForm" action="register_process.php" method="POST">
         <div class="form-group">
           <label for="name">Full Name</label>
-          <input type="text" id="name" class="form-control" placeholder="Enter your full name" required>
+          <input type="text" id="name" name="name" class="form-control" placeholder="Enter your full name" required>
         </div>
 
         <div class="form-group">
           <label for="email">Email Address</label>
-          <input type="email" id="email" class="form-control" placeholder="Enter your email" required>
+          <input type="email" id="email" name="email" class="form-control" placeholder="Enter your email" required>
         </div>
 
         <div class="form-group">
           <label for="password">Password</label>
           <div class="password-wrapper">
-            <input type="password" id="password" class="form-control" placeholder="Create a password" required>
+            <input type="password" id="password" name="password" class="form-control" placeholder="Create a password"
+              required>
             <span class="toggle-password" onclick="togglePasswordVisibility('password', this)">👁️</span>
           </div>
           <div class="strength-container">
@@ -252,8 +253,8 @@
         <div class="form-group">
           <label for="confirm-password">Confirm Password</label>
           <div class="password-wrapper">
-            <input type="password" id="confirm-password" class="form-control" placeholder="Confirm your password"
-              required>
+            <input type="password" id="confirm-password" name="confirm_password" class="form-control"
+              placeholder="Confirm your password" required>
             <span class="toggle-password" onclick="togglePasswordVisibility('confirm-password', this)">👁️</span>
           </div>
           <div id="matchError" class="error-text">Passwords do not match</div>
@@ -263,10 +264,23 @@
       </form>
 
       <div class="login-link">
-        Already have an account? <a href="#">Login here</a>
+        Already have an account? <a href="login.php">Login here</a>
       </div>
     </div>
   </div>
+
+  <script>
+    function togglePasswordVisibility(fieldId, icon) {
+      const passwordField = document.getElementById(fieldId);
+      if (passwordField.type === "password") {
+        passwordField.type = "text";
+        icon.textContent = "🙈";
+      } else {
+        passwordField.type = "password";
+        icon.textContent = "👁️";
+      }
+    }
+  </script>
 
   <script src="script.js"></script>
 </body>
