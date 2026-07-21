@@ -1,47 +1,38 @@
 <?php
+session_start();
 require_once 'db.php';
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $email = mysqli_real_escape_string($conn, $_POST['email']);
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $email = trim($_POST['email']);
     $password = $_POST['password'];
-    $selected_role = $_POST['role'];
 
-    $sql = "SELECT * FROM users WHERE email='$email'";
-    $result = $conn->query($sql);
+    $sql = "SELECT * FROM users WHERE email = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("s", $email);
+    $stmt->execute();
+    $result = $stmt->get_result();
 
-    if ($result->num_rows > 0) {
+    if ($result->num_rows === 1) {
         $user = $result->fetch_assoc();
-        
-        if (password_verify($password, $user['password'])) {
-            
-            if ($selected_role !== $user['role']) {
-                echo "Access Denied! Your account role does not match the selected role.";
-                exit();
-            }
 
-            session_start();
+        if (password_verify($password, $user['password'])) {
             $_SESSION['user_id'] = $user['id'];
             $_SESSION['user_name'] = $user['name'];
-            $_SESSION['user_role'] = $user['role'];
-            
-            if ($selected_role === 'customer') {
-                header("Location: customer_home.html");
-                exit();
-            } elseif ($selected_role === 'admin') {
+            $_SESSION['role'] = $user['role'];
+
+            if ($user['role'] === 'owner') {
+                header("Location: owner_home.php");
+            } elseif ($user['role'] === 'admin') {
                 header("Location: adminDashboard.html");
-                exit();
-            } elseif ($selected_role === 'owner') {
-                header("Location: Owner_home.html");
-                exit();
             } else {
-                echo "Invalid role selected!";
+                header("Location: customer_home.html");
             }
+            exit();
         } else {
-            echo "Invalid password!";
+            echo "Invalid password.";
         }
     } else {
-        echo "No user found with this email!";
+        echo "User not found.";
     }
 }
-$conn->close();
 ?>
