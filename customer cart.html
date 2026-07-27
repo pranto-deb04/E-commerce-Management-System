@@ -1,145 +1,126 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Cart - Sapran Cart</title>
+    <title>Your Shopping Cart</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap">
 </head>
-<body style="margin: 0; padding: 20px; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #0f172a; color: #fff;">
 
-    <!-- মেইন কন্টেইনার (কার্ট পেজ) -->
-    <div style="max-width: 1100px; margin: 40px auto; padding: 20px;">
-        
-        <!-- হেডিং -->
-        <h1 style="font-size: 28px; margin-bottom: 30px; border-bottom: 2px solid rgba(56, 189, 248, 0.2); padding-bottom: 10px;">
-            Shopping <span style="color: #38bdf8;">Cart</span>
-        </h1>
+<body style="margin: 0; padding: 0; font-family: 'Poppins', sans-serif; background-color: #0b0f19; color: #f8fafc;">
 
-        <!-- কার্ট লেআউট -->
-        <div style="display: flex; flex-wrap: wrap; gap: 30px;">
-            
-            <!-- বাম পাশ: প্রোডাক্ট লিস্ট -->
-            <div style="flex: 2; min-width: 300px;">
-                
-                <!-- প্রোডাক্ট আইটেম ১ (Gaming Mouse) -->
-                <div class="cart-item" data-price="25" style="display: flex; align-items: center; background: #1e293b; padding: 20px; border-radius: 12px; margin-bottom: 15px; border: 1px solid rgba(56, 189, 248, 0.1); flex-wrap: wrap; gap: 15px;">
-                    <div style="width: 80px; height: 80px; background: #334155; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 12px; color: #94a3b8;">Image</div>
-                    
-                    <div style="flex: 1; min-width: 150px;">
-                        <h3 style="margin: 0 0 5px 0; font-size: 18px; color: #fff;">Gaming Mouse RGB</h3>
-                        <p style="margin: 0; font-size: 14px; color: #94a3b8;">Category: Gadgets</p>
-                    </div>
-
-                    <!-- পরিমাণ নিয়ন্ত্রণ (Quantity) -->
-                    <div style="display: flex; align-items: center; gap: 10px;">
-                        <button onclick="changeQuantity(this, -1)" style="background: #334155; border: none; color: #fff; width: 30px; height: 30px; border-radius: 5px; cursor: pointer; font-weight: bold;">-</button>
-                        <span class="quantity" style="font-size: 16px; font-weight: bold; width: 20px; text-align: center;">1</span>
-                        <button onclick="changeQuantity(this, 1)" style="background: #334155; border: none; color: #fff; width: 30px; height: 30px; border-radius: 5px; cursor: pointer; font-weight: bold;">+</button>
-                    </div>
-
-                    <!-- ডাইনামিক প্রাইস -->
-                    <div style="font-size: 18px; font-weight: bold; color: #38bdf8; min-width: 80px; text-align: right;">
-                        $<span class="item-total">25.00</span>
-                    </div>
-
-                    <button style="background: transparent; border: none; color: #ef4444; cursor: pointer; font-size: 14px; font-weight: bold; padding: 5px;">Remove</button>
-                </div>
-
-                <!-- প্রোডাক্ট আইটেম ২ (Mechanical Keyboard) -->
-                <div class="cart-item" data-price="45" style="display: flex; align-items: center; background: #1e293b; padding: 20px; border-radius: 12px; margin-bottom: 15px; border: 1px solid rgba(56, 189, 248, 0.1); flex-wrap: wrap; gap: 15px;">
-                    <div style="width: 80px; height: 80px; background: #334155; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 12px; color: #94a3b8;">Image</div>
-                    
-                    <div style="flex: 1; min-width: 150px;">
-                        <h3 style="margin: 0 0 5px 0; font-size: 18px; color: #fff;">Mechanical Keyboard</h3>
-                        <p style="margin: 0; font-size: 14px; color: #94a3b8;">Category: Gadgets</p>
-                    </div>
-
-                    <div style="display: flex; align-items: center; gap: 10px;">
-                        <button onclick="changeQuantity(this, -1)" style="background: #334155; border: none; color: #fff; width: 30px; height: 30px; border-radius: 5px; cursor: pointer; font-weight: bold;">-</button>
-                        <span class="quantity" style="font-size: 16px; font-weight: bold; width: 20px; text-align: center;">1</span>
-                        <button onclick="changeQuantity(this, 1)" style="background: #334155; border: none; color: #fff; width: 30px; height: 30px; border-radius: 5px; cursor: pointer; font-weight: bold;">+</button>
-                    </div>
-
-                    <div style="font-size: 18px; font-weight: bold; color: #38bdf8; min-width: 80px; text-align: right;">
-                        $<span class="item-total">45.00</span>
-                    </div>
-
-                    <button style="background: transparent; border: none; color: #ef4444; cursor: pointer; font-size: 14px; font-weight: bold; padding: 5px;">Remove</button>
-                </div>
-
-            </div>
-
-            <!-- ডানে পাশ: অর্ডার সামারি -->
-            <div style="flex: 1; min-width: 300px;">
-                <div style="background: #1e293b; padding: 30px; border-radius: 12px; border: 1px solid rgba(56, 189, 248, 0.2); box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);">
-                    <h2 style="margin-top: 0; font-size: 22px; margin-bottom: 20px; color: #fff;">Order Summary</h2>
-                    
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 15px; color: #94a3b8;">
-                        <span>Subtotal</span>
-                        <span>$<span id="subtotal">70.00</span></span>
-                    </div>
-
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 15px; color: #94a3b8;">
-                        <span>Shipping Fee</span>
-                        <span>$5.00</span>
-                    </div>
-
-                    <hr style="border: 0; border-top: 1px solid #334155; margin-bottom: 20px;">
-
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 30px; font-size: 20px; font-weight: bold; color: #fff;">
-                        <span>Total</span>
-                        <span style="color: #38bdf8;">$<span id="total">75.00</span></span>
-                    </div>
-
-                    <button style="width: 100%; padding: 14px; background: #38bdf8; border: none; border-radius: 8px; color: #0f172a; font-size: 16px; font-weight: bold; cursor: pointer; transition: all 0.3s ease;">
-                        Proceed to Checkout
-                    </button>
-                </div>
-            </div>
-
+    <nav
+        style="display: flex; justify-content: space-between; align-items: center; padding: 1.5rem 2rem; background: rgba(11, 15, 25, 0.75); border-bottom: 1px solid rgba(255, 255, 255, 0.05); max-width: 1200px; margin: 0 auto;">
+        <div style="font-family: 'Space Grotesk', sans-serif; font-size: 1.5rem; font-weight: 700; color: #22d3ee;">
+            Premium<span style="color: #fff;">Store</span>
         </div>
-    </div>
+        <a href="customer_home.html" style="color: #38bdf8; text-decoration: none; font-weight: 600;">
+            <i class="fas fa-arrow-left"></i> Back to Shop
+        </a>
+    </nav>
 
-    <!-- ক্যালকুলেশনের জন্য ছোট জাভাস্ক্রিপ্ট কোড -->
+    <main style="max-width: 900px; margin: 3rem auto; padding: 0 1.5rem;">
+        <h2 style="font-family: 'Space Grotesk', sans-serif; font-size: 2rem; margin-bottom: 2rem; color: #fff;">Your
+            Shopping Cart</h2>
+
+        <div id="cartItemsContainer" style="display: flex; flex-direction: column; gap: 1rem;">
+        </div>
+
+        <div
+            style="margin-top: 2rem; padding: 1.5rem; background: #131a2e; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.05); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+            <h3 style="margin: 0; font-size: 1.2rem;">Total Amount: <span id="totalPrice"
+                    style="color: #22d3ee;">$0.00</span></h3>
+
+            <div style="display: flex; gap: 10px;">
+                <button onclick="clearCart()"
+                    style="background: rgba(239, 68, 68, 0.2); color: #ef4444; border: 1px solid #ef4444; padding: 0.6rem 1.2rem; border-radius: 8px; cursor: pointer;">
+                    Clear Cart
+                </button>
+
+                <button onclick="proceedToCheckout()"
+                    style="background: #22d3ee; color: #0b0f19; border: none; padding: 0.6rem 1.4rem; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.3s ease;">
+                    Proceed to Checkout <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+    </main>
+
     <script>
-        function changeQuantity(button, change) {
-            // বাটন থেকে মেইন প্রোডাক্ট কন্টেইনার খুঁজে বের করা
-            const item = button.closest('.cart-item');
-            const basePrice = parseFloat(item.getAttribute('data-price'));
-            const quantityElement = item.querySelector('.quantity');
-            const itemTotalElement = item.querySelector('.item-total');
-            
-            // বর্তমান কোয়ান্টিটি আপডেট করা
-            let currentQuantity = parseInt(quantityElement.innerText);
-            currentQuantity += change;
-            
-            // কোয়ান্টিটি যেন ১ এর নিচে না যায়
-            if (currentQuantity < 1) currentQuantity = 1;
-            
-            // পেজে নতুন কোয়ান্টিটি ও গুণফল প্রাইজ বসানো
-            quantityElement.innerText = currentQuantity;
-            itemTotalElement.innerText = (basePrice * currentQuantity).toFixed(2);
-            
-            // পুরো কার্টের সাবটোটাল এবং সর্বমোট হিসাব আপডেট করা
-            updateOrderSummary();
+        document.addEventListener("DOMContentLoaded", function () {
+            renderCart();
+        });
+
+        function renderCart() {
+            let cart = JSON.parse(localStorage.getItem('cart')) || [];
+            const container = document.getElementById('cartItemsContainer');
+            const totalElement = document.getElementById('totalPrice');
+
+            if (cart.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: #64748b; font-size: 1.1rem;">Your cart is currently empty.</p>';
+                totalElement.innerText = '$0.00';
+                return;
+            }
+
+            let html = '';
+            let total = 0;
+
+            cart.forEach((item, index) => {
+                let itemPrice = parseFloat(item.price) || 0;
+                let itemQuantity = parseInt(item.quantity) || 1;
+                let itemTotal = itemPrice * itemQuantity;
+                total += itemTotal;
+
+                html += `
+                    <div style="display: flex; align-items: center; justify-content: space-between; background: #1e293b; padding: 1rem 1.5rem; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.05);">
+                        <div style="display: flex; align-items: center; gap: 1.2rem;">
+                            <img src="${item.image || 'https://via.placeholder.com/60'}" width="60" height="60" style="object-fit: cover; border-radius: 8px;">
+                            <div>
+                                <h4 style="margin: 0 0 0.3rem 0; color: #fff; font-size: 1.1rem;">${item.name}</h4>
+                                <p style="margin: 0; color: #94a3b8; font-size: 0.9rem;">$${itemPrice.toFixed(2)} x ${itemQuantity}</p>
+                            </div>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 1.5rem;">
+                            <span style="font-weight: 700; color: #22d3ee; font-size: 1.1rem;">$${itemTotal.toFixed(2)}</span>
+                            <button onclick="removeItem(${index})" style="background: rgba(239, 68, 68, 0.15); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); padding: 0.4rem 0.8rem; border-radius: 6px; cursor: pointer;">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+            totalElement.innerText = '$' + total.toFixed(2);
         }
 
-        function updateOrderSummary() {
-            let subtotal = 0;
-            // প্রতিটি প্রোডাক্টের মোট দাম যোগ করা
-            document.querySelectorAll('.cart-item').forEach(item => {
-                const itemTotal = parseFloat(item.querySelector('.item-total').innerText);
-                subtotal += itemTotal;
-            });
-            
-            const shippingFee = 5.00;
-            const total = subtotal + shippingFee;
-            
-            // ডানপাশের বক্সে আপডেট করা
-            document.getElementById('subtotal').innerText = subtotal.toFixed(2);
-            document.getElementById('total').innerText = total.toFixed(2);
+        function removeItem(index) {
+            let cart = JSON.parse(localStorage.getItem('cart')) || [];
+            cart.splice(index, 1);
+            localStorage.setItem('cart', JSON.stringify(cart));
+            renderCart();
+        }
+
+        function clearCart() {
+            localStorage.removeItem('cart');
+            renderCart();
+        }
+
+        function proceedToCheckout() {
+            let cart = JSON.parse(localStorage.getItem('cart')) || [];
+
+            if (cart.length === 0) {
+                alert("Your cart is empty! Add products before checking out.");
+                return;
+            }
+
+            localStorage.setItem('checkout_cart', JSON.stringify(cart));
+            localStorage.removeItem('cart');
+            window.location.href = "checkout_cart.html";
         }
     </script>
-
 </body>
+
 </html>
