@@ -13,7 +13,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $city           = $_POST['city'] ?? '';
     $zip            = $_POST['zip'] ?? '';
     $payment_method = $_POST['payment'] ?? 'COD';
-    $total_amount   = 75.00; // আপনার অর্ডারের টোটাল প্রাইস
+    $total_amount   = 75.00;
 
     if (empty($full_name) || empty($phone) || empty($address)) {
         echo json_encode(["status" => "error", "message" => "Required fields missing"]);
