@@ -1,30 +1,47 @@
 <?php
-require_once 'db.php'; 
+require_once 'db.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    
-    $name = trim($_POST['productName']);
-    $price = floatval($_POST['productPrice']);
-    $description = isset($_POST['productDescription']) ? trim($_POST['productDescription']) : '';
-    $image = isset($_POST['productImage']) ? trim($_POST['productImage']) : '';
+    $name = isset($_POST['name']) ? trim($_POST['name']) : '';
+    $price = isset($_POST['price']) ? $_POST['price'] : 0;
+    $stock = isset($_POST['stock']) ? $_POST['stock'] : 0;
+    $description = isset($_POST['description']) ? trim($_POST['description']) : '';
 
-    
-    $stmt = $conn->prepare("INSERT INTO products (name, description, price, image) VALUES (?, ?, ?, ?)");
-    $stmt->bind_param("ssds", $name, $description, $price, $image);
+    $imagePath = "";
+    if (isset($_FILES['image']) && $_FILES['image']['error'] == 0) {
+        $targetDir = "uploads/";
+        if (!is_dir($targetDir)) {
+            mkdir($targetDir, 0777, true);
+        }
+        $fileName = time() . '_' . basename($_FILES["image"]["name"]);
+        $targetFilePath = $targetDir . $fileName;
+
+        if (move_uploaded_file($_FILES["image"]["tmp_name"], $targetFilePath)) {
+            $imagePath = $targetFilePath;
+        }
+    }
+
+    $sql = "INSERT INTO products (name, price, stock, description, image) VALUES (?, ?, ?, ?, ?)";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("sdiss", $name, $price, $stock, $description, $imagePath);
 
     if ($stmt->execute()) {
         echo "<script>
                 alert('Product added successfully!');
-                window.location.href = 'customer_home.html#shop';
+                window.location.href = 'adminDashboard.html';
               </script>";
     } else {
         echo "<script>
-                alert('Error: Could not add product.');
+                alert('Error: " . addslashes($conn->error) . "');
                 window.history.back();
               </script>";
     }
 
     $stmt->close();
-    $conn->close();
+} else {
+    header("Location: addProducts.html");
+    exit();
 }
+
+$conn->close();
 ?>
