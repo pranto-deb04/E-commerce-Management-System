@@ -2,26 +2,44 @@
 require_once 'db.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $name = mysqli_real_escape_string($conn, $_POST['name']);
-    $email = mysqli_real_escape_string($conn, $_POST['email']);
+    $name = trim($_POST['name']);
+    $email = trim($_POST['email']);
     $password = $_POST['password'];
 
     $encrypted_password = password_hash($password, PASSWORD_BCRYPT);
 
-    $checkEmail = "SELECT * FROM users WHERE email='$email'";
-    $result = $conn->query($checkEmail);
+    $checkEmail = "SELECT id FROM users WHERE email = ?";
+    $stmt = $conn->prepare($checkEmail);
+    $stmt->bind_param("s", $email);
+    $stmt->execute();
+    $result = $stmt->get_result();
 
     if ($result->num_rows > 0) {
-        echo "Error: Email already exists!";
+        echo "<script>
+                alert('Error: Email already exists!');
+                window.history.back();
+              </script>";
     } else {
-        $sql = "INSERT INTO users (name, email, password) VALUES ('$name', '$email', '$encrypted_password')";
+        $sql = "INSERT INTO users (name, email, password) VALUES (?, ?, ?)";
+        $insert_stmt = $conn->prepare($sql);
+        $insert_stmt->bind_param("sss", $name, $email, $encrypted_password);
 
-        if ($conn->query($sql) === TRUE) {
-            echo "Registration successful!";
+        if ($insert_stmt->execute()) {
+            echo "<script>
+                    alert('Registration successful!');
+                    window.location.href = 'login.html';
+                  </script>";
         } else {
-            echo "Error: " . $sql . "<br>" . $conn->error;
+            echo "<script>
+                    alert('Error: Could not complete registration.');
+                    window.history.back();
+                  </script>";
         }
+        $insert_stmt->close();
     }
+    
+    $stmt->close();
 }
+
 $conn->close();
 ?>

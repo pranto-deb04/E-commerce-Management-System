@@ -1,11 +1,11 @@
 <?php
-// আপনার ডাটাবেজ কানেকশন ফাইল
+
 include 'db.php';
 
 header('Content-Type: application/json');
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
-    // ফর্ম থেকে আসা ডেটা রিসিভ করা
+    
     $full_name      = $_POST['fullname'] ?? '';
     $phone          = $_POST['phone'] ?? '';
     $email          = $_POST['email'] ?? '';
@@ -20,7 +20,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         exit;
     }
 
-    // SQL Injection থেকে বাঁচতে Prepared Statement
+    
     $stmt = $conn->prepare("INSERT INTO orders (full_name, phone, email, address, city, zip, total_amount, payment_method) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
     $stmt->bind_param("ssssssds", $full_name, $phone, $email, $address, $city, $zip, $total_amount, $payment_method);
 

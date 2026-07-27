@@ -60,6 +60,8 @@
       font-weight: bold;
       cursor: pointer;
       transition: background 0.3s ease;
+      text-decoration: none;
+      display: inline-block;
     }
 
     .btn-add {
@@ -68,24 +70,6 @@
     }
 
     .btn-add:hover {
-      background-color: #7dd3fc;
-    }
-
-    .btn-cancel {
-      background-color: #334155;
-      color: #94a3b8;
-    }
-
-    .btn-cancel:hover {
-      background-color: #475569;
-    }
-
-    .btn-save {
-      background-color: #38bdf8;
-      color: #0f172a;
-    }
-
-    .btn-save:hover {
       background-color: #7dd3fc;
     }
 
@@ -160,59 +144,6 @@
       border-color: #38bdf8;
       color: #38bdf8;
     }
-
-    .modal {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.6);
-      display: none;
-      justify-content: center;
-      align-items: center;
-      z-index: 2000;
-    }
-
-    .modal-content {
-      background: #1e293b;
-      padding: 30px;
-      border-radius: 12px;
-      width: 400px;
-      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-    }
-
-    .modal-content h3 {
-      margin-bottom: 20px;
-      color: #ffffff;
-    }
-
-    .form-group {
-      margin-bottom: 15px;
-    }
-
-    .form-group label {
-      display: block;
-      margin-bottom: 5px;
-      font-weight: 600;
-      color: #94a3b8;
-      font-size: 14px;
-    }
-
-    .form-control {
-      width: 100%;
-      padding: 10px;
-      background-color: #0f172a;
-      border: 1px solid #334155;
-      border-radius: 6px;
-      color: #ffffff;
-      outline: none;
-      transition: border-color 0.3s ease;
-    }
-
-    .form-control:focus {
-      border-color: #38bdf8;
-    }
   </style>
 </head>
 
@@ -226,7 +157,7 @@
   <div class="container">
     <div class="header-area">
       <h2>Product Management</h2>
-      <button class="btn btn-add" onclick="openModal()">+ Add New Product</button>
+      <a href="addProducts.html" class="btn btn-add">+ Add New Product</a>
     </div>
 
     <div class="table-wrapper">
@@ -248,41 +179,7 @@
     </div>
   </div>
 
-  <div class="modal" id="productModal">
-    <div class="modal-content">
-      <h3>Add New Product</h3>
-      <form onsubmit="saveProduct(event)">
-        <div class="form-group">
-          <label>Product Name</label>
-          <input type="text" id="pName" class="form-control" required>
-        </div>
-        <div class="form-group">
-          <label>Price ($)</label>
-          <input type="number" id="pPrice" class="form-control" step="0.01" required>
-        </div>
-        <div class="form-group">
-          <label>Stock</label>
-          <input type="number" id="pStock" class="form-control" required>
-        </div>
-        <div style="text-align: right; margin-top: 20px; display: flex; justify-content: flex-end; gap: 10px;">
-          <button type="button" class="btn btn-cancel" onclick="closeModal()">Cancel</button>
-          <button type="submit" class="btn btn-save">Save</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
   <script>
-    let idCounter = 0;
-
-    function openModal() {
-      document.getElementById('productModal').style.display = 'flex';
-    }
-
-    function closeModal() {
-      document.getElementById('productModal').style.display = 'none';
-    }
-
     function changeStock(id, amount) {
       const stockText = document.getElementById(id);
       let currentStock = parseInt(stockText.textContent);
@@ -300,40 +197,6 @@
           tableBody.innerHTML = `<tr id="no-data-row"><td colspan="4" class="empty-msg">No products found. Database not connected.</td></tr>`;
         }
       }
-    }
-
-    function saveProduct(event) {
-      event.preventDefault();
-
-      const name = document.getElementById('pName').value;
-      const price = parseFloat(document.getElementById('pPrice').value).toFixed(2);
-      const stock = document.getElementById('pStock').value;
-
-      idCounter++;
-      const stockId = 'stock-num-' + idCounter;
-
-      const tableBody = document.getElementById('product-list');
-
-      const noDataRow = document.getElementById('no-data-row');
-      if (noDataRow) { noDataRow.remove(); }
-
-      const newRow = document.createElement('tr');
-      newRow.innerHTML = `
-                <td><b>${name}</b></td>
-                <td style="color: #38bdf8; font-weight: bold;">$${price}</td>
-                <td>
-                    <div class="stock-box">
-                        <button class="btn-stock" onclick="changeStock('${stockId}', -1)">-</button>
-                        <span id="${stockId}">${stock}</span>
-                        <button class="btn-stock" onclick="changeStock('${stockId}', 1)">+</button>
-                    </div>
-                </td>
-                <td><button class="btn-delete" onclick="deleteProduct(this)">Delete</button></td>
-            `;
-
-      tableBody.appendChild(newRow);
-      closeModal();
-      event.target.reset();
     }
   </script>
 </body>
