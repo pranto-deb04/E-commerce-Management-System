@@ -144,7 +144,7 @@
 
   <header>
     <a href="#" class="logo">E-Shopping</a>
-    <a href="admin_dashboard.html" class="btn-back">Back to Dashboard</a>
+    <a href="adminDashboard.html" class="btn-back">Back to Dashboard</a>
   </header>
 
   <div class="form-container">
@@ -182,9 +182,10 @@
         </div>
 
         <div class="form-group">
-          <label for="productImage">Product Image (URL or File)</label>
-          <input type="text" id="productImage" name="productImage" class="form-control"
-            placeholder="Image URL (e.g. https://example.com/image.jpg)">
+          <label for="productImage">Product Image (URL or Upload File)</label>
+          <input type="text" id="productImageUrl" name="productImageUrl" class="form-control"
+            placeholder="Image URL (e.g. https://example.com/image.jpg)" style="margin-bottom: 8px;">
+          <input type="file" id="productImageFile" name="productImageFile" class="form-control" accept="image/*">
         </div>
 
         <div class="form-row">
