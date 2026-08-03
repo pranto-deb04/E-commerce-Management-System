@@ -140,6 +140,7 @@
         </div>
     </div>
 
+
     <div id="successContainer"
         style="display: none; max-width: 500px; margin: 80px auto; padding: 40px 30px; background: #1e293b; border-radius: 16px; border: 1px solid #22c55e; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
         <div
@@ -150,10 +151,10 @@
         <p style="color: #94a3b8; font-size: 15px; margin-bottom: 30px; line-height: 1.5;">
             Thank you for your purchase. Your order has been placed successfully and is being processed.
         </p>
-        <a href="customer_home.html"
-            style="display: block; width: 100%; background-color: #38bdf8; color: #0f172a; text-decoration: none; padding: 14px 0; border-radius: 8px; font-size: 16px; font-weight: bold; box-sizing: border-box;">
+        <button type="button" onclick="goToCustomerHome()"
+            style="display: block; width: 100%; background-color: #38bdf8; color: #0f172a; text-decoration: none; padding: 14px 0; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; box-sizing: border-box; cursor: pointer;">
             Back to Home
-        </a>
+        </button>
     </div>
 
     <script>
@@ -173,6 +174,9 @@
                 document.getElementById('subtotalAmount').innerText = '$0.00';
                 document.getElementById('grandTotalAmount').innerText = '$0.00';
                 document.getElementById('btnTotal').innerText = '$0.00';
+
+                document.getElementById('submitBtn').disabled = true;
+                document.getElementById('submitBtn').style.opacity = '0.5';
                 return;
             }
 
@@ -202,8 +206,14 @@
             document.getElementById('btnTotal').innerText = '$' + grandTotal.toFixed(2);
         }
 
+
         function triggerFormSubmit() {
             const form = document.getElementById('checkoutForm');
+
+            if (checkoutCart.length === 0) {
+                alert('Your cart is empty!');
+                return;
+            }
 
             if (form.checkValidity()) {
                 const submitBtn = document.getElementById('submitBtn');
@@ -227,16 +237,14 @@
                             localStorage.removeItem('checkout_cart');
                             showSuccessScreen();
                         } else {
-                            alert('Order Error: ' + data.message);
-                            submitBtn.innerText = 'Place Order ($' + grandTotal.toFixed(2) + ')';
-                            submitBtn.disabled = false;
+                            alert('Order Error: ' + (data.message || 'Something went wrong!'));
+                            resetSubmitButton(submitBtn);
                         }
                     })
                     .catch(error => {
                         console.error('Error:', error);
-                        alert('Server error! Make sure place_order.php and DB are connected.');
-                        submitBtn.innerText = 'Place Order ($' + grandTotal.toFixed(2) + ')';
-                        submitBtn.disabled = false;
+                        alert('Server error! Make sure place_order.php is responding correctly.');
+                        resetSubmitButton(submitBtn);
                     });
 
             } else {
@@ -244,9 +252,20 @@
             }
         }
 
+        function resetSubmitButton(btn) {
+            btn.innerText = 'Place Order ($' + grandTotal.toFixed(2) + ')';
+            btn.disabled = false;
+        }
+
+
         function showSuccessScreen() {
             document.getElementById('checkoutContainer').style.display = 'none';
             document.getElementById('successContainer').style.display = 'block';
+            window.scrollTo(0, 0);
+        }
+
+        function goToCustomerHome() {
+            window.location.href = 'customer_home.html';
         }
     </script>
 
