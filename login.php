@@ -1,38 +1,60 @@
 <?php
+ob_start();
 session_start();
+
+error_reporting(E_ALL);
+ini_set('display_errors', 0);
+
 require_once 'db.php';
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $email = trim($_POST['email']);
-    $password = $_POST['password'];
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $email    = trim($_POST['email'] ?? '');
+    $password = $_POST['password'] ?? '';
 
-    $sql = "SELECT * FROM users WHERE email = ?";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("s", $email);
-    $stmt->execute();
-    $result = $stmt->get_result();
+    if (empty($email) || empty($password)) {
+        echo "<script>alert('Please enter both email and password.'); window.history.back();</script>";
+        exit();
+    }
 
-    if ($result->num_rows === 1) {
-        $user = $result->fetch_assoc();
+    try {
+        $sql  = "SELECT * FROM users WHERE email = :email LIMIT 1";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute(['email' => $email]);
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        if (password_verify($password, $user['password'])) {
-            $_SESSION['user_id'] = $user['id'];
+        if ($user && password_verify($password, $user['password'])) {
+            session_regenerate_id(true);
+
+            $user_role = strtolower(trim($user['role'] ?? 'customer'));
+
+            $_SESSION['user_id']   = $user['id'];
+            $_SESSION['id']        = $user['id']; // Backup key for other files
             $_SESSION['user_name'] = $user['name'];
-            $_SESSION['role'] = $user['role'];
+            $_SESSION['role']      = $user_role;
 
-            if ($user['role'] === 'owner') {
+            ob_clean();
+
+            if ($user_role === 'owner') {
                 header("Location: owner_home.php");
-            } elseif ($user['role'] === 'admin') {
+                echo "<script>window.location.href = 'owner_home.php';</script>";
+            } elseif ($user_role === 'admin') {
                 header("Location: adminDashboard.html");
+                echo "<script>window.location.href = 'adminDashboard.html';</script>";
             } else {
                 header("Location: customer_home.html");
+                echo "<script>window.location.href = 'customer_home.html';</script>";
             }
             exit();
+
         } else {
-            echo "Invalid password.";
+            echo "<script>alert('Invalid email or password.'); window.history.back();</script>";
+            exit();
         }
-    } else {
-        echo "User not found.";
+
+    } catch (PDOException $e) {
+        error_log("Login Error: " . $e->getMessage());
+        echo "<script>alert('A system error occurred. Please try again later.'); window.history.back();</script>";
+        exit();
     }
 }
 ?>

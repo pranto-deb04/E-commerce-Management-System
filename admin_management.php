@@ -10,35 +10,50 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'owner') {
 $message = "";
 
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['add_admin'])) {
-    $name = trim($_POST['admin_name']);
-    $email = trim($_POST['admin_email']);
+    $name     = trim($_POST['admin_name']);
+    $email    = trim($_POST['admin_email']);
     $password = $_POST['admin_password'];
-    $role = 'admin';
+    $role     = 'admin';
 
-    $check_sql = "SELECT id FROM users WHERE email = ?";
-    $stmt = $conn->prepare($check_sql);
-    $stmt->bind_param("s", $email);
-    $stmt->execute();
-    $result = $stmt->get_result();
+    try {
+        $check_sql = "SELECT id FROM users WHERE email = :email";
+        $stmt = $pdo->prepare($check_sql);
+        $stmt->execute(['email' => $email]);
 
-    if ($result->num_rows > 0) {
-        $message = "<div style='padding: 10px; background-color: #fef2f2; color: #ef4444; border-radius: 6px; margin-bottom: 15px;'>Email already exists!</div>";
-    } else {
-        $hashed_password = password_hash($password, PASSWORD_BCRYPT);
-        $insert_sql = "INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, ?)";
-        $stmt = $conn->prepare($insert_sql);
-        $stmt->bind_param("ssss", $name, $email, $hashed_password, $role);
-
-        if ($stmt->execute()) {
-            $message = "<div style='padding: 10px; background-color: #f0fdf4; color: #15803d; border-radius: 6px; margin-bottom: 15px;'>New Admin Added Successfully!</div>";
+        if ($stmt->fetch()) {
+            $message = "<div style='padding: 10px; background-color: #fef2f2; color: #ef4444; border-radius: 6px; margin-bottom: 15px;'>Email already exists!</div>";
         } else {
-            $message = "<div style='padding: 10px; background-color: #fef2f2; color: #ef4444; border-radius: 6px; margin-bottom: 15px;'>Failed to add admin.</div>";
+            $hashed_password = password_hash($password, PASSWORD_BCRYPT);
+            $insert_sql = "INSERT INTO users (name, email, password, role) VALUES (:name, :email, :password, :role)";
+            $stmt = $pdo->prepare($insert_sql);
+            
+            $inserted = $stmt->execute([
+                'name'     => $name,
+                'email'    => $email,
+                'password' => $hashed_password,
+                'role'     => $role
+            ]);
+
+            if ($inserted) {
+                $message = "<div style='padding: 10px; background-color: #f0fdf4; color: #15803d; border-radius: 6px; margin-bottom: 15px;'>New Admin Added Successfully!</div>";
+            } else {
+                $message = "<div style='padding: 10px; background-color: #fef2f2; color: #ef4444; border-radius: 6px; margin-bottom: 15px;'>Failed to add admin.</div>";
+            }
         }
+    } catch (PDOException $e) {
+        error_log($e->getMessage());
+        $message = "<div style='padding: 10px; background-color: #fef2f2; color: #ef4444; border-radius: 6px; margin-bottom: 15px;'>System error occurred.</div>";
     }
 }
 
-$admins_sql = "SELECT id, name, email FROM users WHERE role = 'admin' ORDER BY id DESC";
-$admins_result = $conn->query($admins_sql);
+try {
+    $admins_sql = "SELECT id, name, email FROM users WHERE role = 'admin' ORDER BY id DESC";
+    $admins_stmt = $pdo->query($admins_sql);
+    $admins = $admins_stmt->fetchAll();
+} catch (PDOException $e) {
+    error_log($e->getMessage());
+    $admins = [];
+}
 ?>
 
 <!DOCTYPE html>
@@ -88,8 +103,8 @@ $admins_result = $conn->query($admins_sql);
                     </tr>
                 </thead>
                 <tbody>
-                    <?php if ($admins_result && $admins_result->num_rows > 0): ?>
-                        <?php while ($row = $admins_result->fetch_assoc()): ?>
+                    <?php if (!empty($admins)): ?>
+                        <?php foreach ($admins as $row): ?>
                             <tr style="border-bottom: 1px solid #e2e8f0;">
                                 <td style="padding: 15px;"><?php echo htmlspecialchars($row['id']); ?></td>
                                 <td style="padding: 15px; font-weight: 600;"><?php echo htmlspecialchars($row['name']); ?></td>
@@ -98,7 +113,7 @@ $admins_result = $conn->query($admins_sql);
                                     <a href="delete_admin.php?id=<?php echo $row['id']; ?>" onclick="return confirm('Are you sure you want to delete this admin?');" style="color: #ef4444; text-decoration: none; font-weight: 500;">Delete</a>
                                 </td>
                             </tr>
-                        <?php endwhile; ?>
+                        <?php endforeach; ?>
                     <?php else: ?>
                         <tr>
                             <td colspan="4" style="padding: 20px; text-align: center; color: #64748b;">No admin accounts found.</td>

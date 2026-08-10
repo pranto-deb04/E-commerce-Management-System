@@ -27,24 +27,37 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     if (!empty($name) && $price > 0) {
-        $sql = "INSERT INTO products (name, price, stock, description, image) VALUES (?, ?, ?, ?, ?)";
-        $stmt = $conn->prepare($sql);
-        
-        $stmt->bind_param("sdiss", $name, $price, $stock, $description, $imagePath);
+        try {
+            $sql = "INSERT INTO products (name, price, stock, description, image) VALUES (:name, :price, :stock, :description, :image)";
+            $stmt = $pdo->prepare($sql);
+            
+            $inserted = $stmt->execute([
+                'name'        => $name,
+                'price'       => $price,
+                'stock'       => $stock,
+                'description' => $description,
+                'image'       => $imagePath
+            ]);
 
-        if ($stmt->execute()) {
+            if ($inserted) {
+                echo "<script>
+                        alert('Product added successfully!');
+                        window.location.href = 'adminDashboard.html';
+                      </script>";
+            } else {
+                echo "<script>
+                        alert('Error adding product.');
+                        window.history.back();
+                      </script>";
+            }
+        } catch (PDOException $e) {
+            error_log($e->getMessage());
+            $errorMsg = addslashes($e->getMessage());
             echo "<script>
-                    alert('Product added successfully!');
-                    window.location.href = 'adminDashboard.html';
-                  </script>";
-        } else {
-            echo "<script>
-                    alert('Error: " . addslashes($stmt->error) . "');
+                    alert('Error: " . $errorMsg . "');
                     window.history.back();
                   </script>";
         }
-
-        $stmt->close();
     } else {
         echo "<script>
                 alert('Please enter valid product details.');
@@ -55,6 +68,4 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     header("Location: addProducts.html");
     exit();
 }
-
-$conn->close();
 ?>

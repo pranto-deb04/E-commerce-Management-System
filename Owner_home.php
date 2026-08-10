@@ -10,16 +10,20 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'owner') {
 $total_users = 0;
 $total_admins = 0;
 
-$user_count_query = "SELECT COUNT(*) as total FROM users WHERE role = 'customer'";
-$user_res = $conn->query($user_count_query);
-if ($user_res) {
-    $total_users = $user_res->fetch_assoc()['total'];
-}
+try {
+    $user_count_query = "SELECT COUNT(*) as total FROM users WHERE role = 'customer'";
+    $user_stmt = $pdo->query($user_count_query);
+    if ($user_stmt) {
+        $total_users = $user_stmt->fetch()['total'];
+    }
 
-$admin_count_query = "SELECT COUNT(*) as total FROM users WHERE role = 'admin'";
-$admin_res = $conn->query($admin_count_query);
-if ($admin_res) {
-    $total_admins = $admin_res->fetch_assoc()['total'];
+    $admin_count_query = "SELECT COUNT(*) as total FROM users WHERE role = 'admin'";
+    $admin_stmt = $pdo->query($admin_count_query);
+    if ($admin_stmt) {
+        $total_admins = $admin_stmt->fetch()['total'];
+    }
+} catch (PDOException $e) {
+    error_log($e->getMessage());
 }
 ?>
 
@@ -67,14 +71,14 @@ if ($admin_res) {
                 <h4
                     style="color: #64748b; font-size: 14px; text-transform: uppercase; margin-bottom: 10px; margin-top: 0;">
                     Total Users</h4>
-                <div style="font-size: 32px; font-weight: 700; color: #1e293b;"><?php echo $total_users; ?></div>
+                <div style="font-size: 32px; font-weight: 700; color: #1e293b;"><?php echo htmlspecialchars($total_users); ?></div>
             </div>
             <div
                 style="background: #fff; padding: 25px; border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);">
                 <h4
                     style="color: #64748b; font-size: 14px; text-transform: uppercase; margin-bottom: 10px; margin-top: 0;">
                     Active Admins</h4>
-                <div style="font-size: 32px; font-weight: 700; color: #1e293b;"><?php echo $total_admins; ?></div>
+                <div style="font-size: 32px; font-weight: 700; color: #1e293b;"><?php echo htmlspecialchars($total_admins); ?></div>
             </div>
             <div
                 style="background: #fff; padding: 25px; border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);">

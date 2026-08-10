@@ -8,29 +8,43 @@ $role = 'owner';
 
 $hashed_password = password_hash($password, PASSWORD_BCRYPT);
 
-$check_sql = "SELECT id FROM users WHERE email = ?";
-$stmt = $conn->prepare($check_sql);
-$stmt->bind_param("s", $email);
-$stmt->execute();
-$result = $stmt->get_result();
+try {
+    $check_sql = "SELECT id FROM users WHERE email = :email";
+    $stmt = $pdo->prepare($check_sql);
+    $stmt->execute(['email' => $email]);
 
-if ($result->num_rows > 0) {
-    $update_sql = "UPDATE users SET password = ?, role = ? WHERE email = ?";
-    $stmt = $conn->prepare($update_sql);
-    $stmt->bind_param("sss", $hashed_password, $role, $email);
-    if ($stmt->execute()) {
-        echo "<h2 style='color:green;'>Success! Owner Password Updated.</h2>";
+    if ($stmt->fetch()) {
+        $update_sql = "UPDATE users SET password = :password, role = :role WHERE email = :email";
+        $stmt = $pdo->prepare($update_sql);
+        $updated = $stmt->execute([
+            'password' => $hashed_password,
+            'role'     => $role,
+            'email'    => $email
+        ]);
+
+        if ($updated) {
+            echo "<h2 style='color:green;'>Success! Owner Password Updated.</h2>";
+        } else {
+            echo "<h2 style='color:red;'>Error updating record.</h2>";
+        }
     } else {
-        echo "<h2 style='color:red;'>Error updating: " . $conn->error . "</h2>";
+        $insert_sql = "INSERT INTO users (name, email, password, role) VALUES (:name, :email, :password, :role)";
+        $stmt = $pdo->prepare($insert_sql);
+        $inserted = $stmt->execute([
+            'name'     => $name,
+            'email'    => $email,
+            'password' => $hashed_password,
+            'role'     => $role
+        ]);
+
+        if ($inserted) {
+            echo "<h2 style='color:green;'>Success! Owner Created Successfully.</h2>";
+        } else {
+            echo "<h2 style='color:red;'>Error inserting record.</h2>";
+        }
     }
-} else {
-    $insert_sql = "INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, ?)";
-    $stmt = $conn->prepare($insert_sql);
-    $stmt->bind_param("ssss", $name, $email, $hashed_password, $role);
-    if ($stmt->execute()) {
-        echo "<h2 style='color:green;'>Success! Owner Created Successfully.</h2>";
-    } else {
-        echo "<h2 style='color:red;'>Error inserting: " . $conn->error . "</h2>";
-    }
+} catch (PDOException $e) {
+    error_log($e->getMessage());
+    echo "<h2 style='color:red;'>Database Error: " . htmlspecialchars($e->getMessage()) . "</h2>";
 }
 ?>

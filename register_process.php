@@ -1,45 +1,69 @@
 <?php
+ob_start();
+session_start();
+
+error_reporting(E_ALL);
+ini_set('display_errors', 0);
+
 require_once 'db.php';
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $name = trim($_POST['name']);
-    $email = trim($_POST['email']);
-    $password = $_POST['password'];
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    $name     = trim($_POST['name'] ?? '');
+    $email    = trim($_POST['email'] ?? '');
+    $password = $_POST['password'] ?? '';
 
-    $encrypted_password = password_hash($password, PASSWORD_BCRYPT);
-
-    $checkEmail = "SELECT id FROM users WHERE email = ?";
-    $stmt = $conn->prepare($checkEmail);
-    $stmt->bind_param("s", $email);
-    $stmt->execute();
-    $result = $stmt->get_result();
-
-    if ($result->num_rows > 0) {
+    if (empty($name) || empty($email) || empty($password)) {
         echo "<script>
-                alert('Error: Email already exists!');
+                alert('Error: All fields are required!');
                 window.history.back();
               </script>";
-    } else {
-        $sql = "INSERT INTO users (name, email, password) VALUES (?, ?, ?)";
-        $insert_stmt = $conn->prepare($sql);
-        $insert_stmt->bind_param("sss", $name, $email, $encrypted_password);
+        exit;
+    }
 
-        if ($insert_stmt->execute()) {
+    try {
+        $checkEmail = "SELECT id FROM users WHERE email = :email LIMIT 1";
+        $stmt = $pdo->prepare($checkEmail);
+        $stmt->execute(['email' => $email]);
+
+        if ($stmt->fetch()) {
+            echo "<script>
+                    alert('Error: Email already exists!');
+                    window.history.back();
+                  </script>";
+            exit;
+        }
+
+        $encrypted_password = password_hash($password, PASSWORD_BCRYPT);
+
+        $sql = "INSERT INTO users (name, email, password) VALUES (:name, :email, :password)";
+        $insert_stmt = $pdo->prepare($sql);
+        $success = $insert_stmt->execute([
+            'name'     => $name,
+            'email'    => $email,
+            'password' => $encrypted_password
+        ]);
+
+        if ($success) {
             echo "<script>
                     alert('Registration successful!');
                     window.location.href = 'login.html';
                   </script>";
+            exit;
         } else {
             echo "<script>
                     alert('Error: Could not complete registration.');
                     window.history.back();
                   </script>";
+            exit;
         }
-        $insert_stmt->close();
-    }
-    
-    $stmt->close();
-}
 
-$conn->close();
+    } catch (PDOException $e) {
+        error_log("Registration Error: " . $e->getMessage());
+        echo "<script>
+                alert('Database Error: Unable to process request.');
+                window.history.back();
+              </script>";
+        exit;
+    }
+}
 ?>
