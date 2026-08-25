@@ -44,6 +44,7 @@
       border-radius: 6px;
       font-weight: 600;
       transition: all 0.3s ease;
+      cursor: pointer;
     }
 
     .sidebar a:hover,
@@ -100,6 +101,7 @@
       border-radius: 10px;
       padding: 20px;
       box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
+      overflow-x: auto;
     }
 
     table {
@@ -136,39 +138,94 @@
 
   <div class="sidebar">
     <h2>Admin Panel</h2>
-    <a href="adminDashboard.html" class="active">Products</a>
+    <a id="navProducts" class="active" onclick="showSection('products')">Products</a>
+    <a id="navOrders" onclick="showSection('orders')">Orders</a>
     <a href="logout.php" class="logout-btn">Logout</a>
   </div>
 
   <div class="main-content">
-    <div class="header">
-      <h1>Product Management</h1>
-      <a href="addProducts.html" class="btn-add">+ Add New Product</a>
+
+    <!-- Products Section -->
+    <div id="productsSection">
+      <div class="header">
+        <h1>Product Management</h1>
+        <a href="addProducts.html" class="btn-add">+ Add New Product</a>
+      </div>
+
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Product Name</th>
+              <th>Price</th>
+              <th>Stock</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="productList">
+            <tr>
+              <td colspan="4" class="empty-msg">Loading products...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
 
-    <div class="table-container">
-      <table>
-        <thead>
-          <tr>
-            <th>Product Name</th>
-            <th>Price</th>
-            <th>Stock</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody id="productList">
-          <tr>
-            <td colspan="4" class="empty-msg">Loading products...</td>
-          </tr>
-        </tbody>
-      </table>
+    <!-- Orders Section -->
+    <div id="ordersSection" style="display: none;">
+      <div class="header">
+        <h1>All Orders</h1>
+      </div>
+
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Order ID</th>
+              <th>Customer</th>
+              <th>Phone</th>
+              <th>Address</th>
+              <th>Total Amount</th>
+              <th>Payment</th>
+              <th>Date</th>
+            </tr>
+          </thead>
+          <tbody id="orderList">
+            <tr>
+              <td colspan="7" class="empty-msg">Loading orders...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
+
   </div>
 
   <script>
     document.addEventListener("DOMContentLoaded", function () {
       fetchProducts();
     });
+
+    function showSection(section) {
+      const prodSec = document.getElementById('productsSection');
+      const orderSec = document.getElementById('ordersSection');
+      const navProd = document.getElementById('navProducts');
+      const navOrder = document.getElementById('navOrders');
+
+      if (section === 'products') {
+        prodSec.style.display = 'block';
+        orderSec.style.display = 'none';
+        navProd.classList.add('active');
+        navOrder.classList.remove('active');
+        fetchProducts();
+      } else if (section === 'orders') {
+        prodSec.style.display = 'none';
+        orderSec.style.display = 'block';
+        navOrder.classList.add('active');
+        navProd.classList.remove('active');
+        fetchOrders();
+      }
+    }
 
     function fetchProducts() {
       fetch('get_products.php')
@@ -185,18 +242,51 @@
           data.forEach(product => {
             const row = document.createElement('tr');
             row.innerHTML = `
-                            <td><b>${product.name}</b></td>
-                            <td style="color: #38bdf8; font-weight: bold;">$${parseFloat(product.price).toFixed(2)}</td>
-                            <td>${product.stock || 0}</td>
-                            <td>
-                                <button onclick="deleteProduct(${product.id})" style="background: rgba(239, 68, 68, 0.2); color: #ef4444; border: 1px solid #ef4444; padding: 6px 12px; border-radius: 4px; cursor: pointer;">Delete</button>
-                            </td>
-                        `;
+              <td><b>${product.name}</b></td>
+              <td style="color: #38bdf8; font-weight: bold;">$${parseFloat(product.price).toFixed(2)}</td>
+              <td>${product.stock || 0}</td>
+              <td>
+                <button onclick="deleteProduct(${product.id})" style="background: rgba(239, 68, 68, 0.2); color: #ef4444; border: 1px solid #ef4444; padding: 6px 12px; border-radius: 4px; cursor: pointer;">Delete</button>
+              </td>
+            `;
             tableBody.appendChild(row);
           });
         })
-        .catch(error => {
+        .catch(() => {
           document.getElementById('productList').innerHTML = '<tr><td colspan="4" class="empty-msg" style="color: #ef4444;">Failed to load products.</td></tr>';
+        });
+    }
+
+    function fetchOrders() {
+      fetch('get_all_orders.php')
+        .then(response => response.json())
+        .then(data => {
+          const tableBody = document.getElementById('orderList');
+          tableBody.innerHTML = '';
+
+          const orders = Array.isArray(data) ? data : (data.orders || []);
+
+          if (!orders || orders.length === 0) {
+            tableBody.innerHTML = '<tr><td colspan="7" class="empty-msg">No orders placed yet.</td></tr>';
+            return;
+          }
+
+          orders.forEach(order => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+              <td><b>#${order.id || order.order_id}</b></td>
+              <td>${order.customer_name || order.user_name || 'N/A'}</td>
+              <td>${order.phone || 'N/A'}</td>
+              <td>${order.shipping_address || order.address || 'N/A'}, ${order.city || ''}</td>
+              <td style="color: #22d3ee; font-weight: bold;">$${parseFloat(order.total_amount || 0).toFixed(2)}</td>
+              <td><span style="background: rgba(56, 189, 248, 0.1); color: #38bdf8; padding: 4px 8px; border-radius: 4px; font-size: 13px;">${order.payment_method || 'COD'}</span></td>
+              <td style="color: #94a3b8; font-size: 13px;">${order.created_at || order.order_date || 'N/A'}</td>
+            `;
+            tableBody.appendChild(row);
+          });
+        })
+        .catch(() => {
+          document.getElementById('orderList').innerHTML = '<tr><td colspan="7" class="empty-msg" style="color: #ef4444;">Failed to load orders.</td></tr>';
         });
     }
 
